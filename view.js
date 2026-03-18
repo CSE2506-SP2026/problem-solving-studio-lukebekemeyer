@@ -8,6 +8,8 @@
 function make_file_element(file_obj) {
     let file_hash = get_full_path(file_obj)
 
+    let explanation_dialog = define_new_dialog('explanation_dialog', 'Permission Explanation')
+
     if(file_obj.is_folder) {
         let folder_elem = $(`<div class='folder' id="${file_hash}_div">
             <h3 id="${file_hash}_header">
@@ -22,6 +24,21 @@ function make_file_element(file_obj) {
         if( file_hash in parent_to_children) {
             let container_elem = $("<div class='folder_contents'></div>")
             folder_elem.append(container_elem)
+
+            let user_log_panel = define_new_effective_permissions('user_log', true, null)
+            $('#sidepanel').append(user_log_panel)
+
+            let user_selector = define_new_user_select_field('user_sel', 'Select...', function(selected_user) {$('#eff_perms').attr('username', selected_user) })
+            $('#sidepanel').append(user_selector)
+            $('#eff_perms').attr('filepath', '/C/presentation_documents/important_file.txt')
+
+            $('.perm_info').click(function() {
+                console.log($('#eff_perms').attr('username'))
+                console.log($('#eff_perms').attr('filepath'))
+                console.log($(this).attr('permission_name'))
+                explanation_dialog.dialog('open')
+            })
+
             for(child_file of parent_to_children[file_hash]) {
                 let child_elem = make_file_element(child_file)
                 container_elem.append(child_elem)
